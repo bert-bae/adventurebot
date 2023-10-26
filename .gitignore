@@ -1,0 +1,5 @@
+.env
+node_modules/
+personas.txt
+tsconfig.tsbuildinfo
+**/lib

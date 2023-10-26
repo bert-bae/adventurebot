@@ -1,0 +1,8 @@
+const path = require("path"); //https://nodejs.org/api/path.html
+
+module.exports = {
+  config: path.resolve("./config", "config.json"),
+  "models-path": path.resolve("./migrations"),
+  "seeders-path": path.resolve("./migrations/seeders"),
+  "migrations-path": path.resolve("./migrations/migrations"),
+};

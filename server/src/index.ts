@@ -2,7 +2,6 @@ import { ValidateError } from "tsoa";
 import express, { NextFunction, Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
 import cors from "cors";
-import http from "http";
 import { RegisterRoutes } from "../__generated__/routes";
 import { websocket } from "./websocket";
 

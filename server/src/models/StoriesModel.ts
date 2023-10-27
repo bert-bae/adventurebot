@@ -20,6 +20,16 @@ export class StoriesModel {
     return story;
   }
 
+  public async getSections(storyId: string) {
+    const sections = await this.prisma.storySection.findMany({
+      where: { storyId },
+      orderBy: {
+        sequence: "asc",
+      },
+    });
+    return sections;
+  }
+
   public async create(story: StoryStartRequest) {
     const storyId = nanoid();
     await this.prisma.$transaction([

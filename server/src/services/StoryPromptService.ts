@@ -64,8 +64,8 @@ export class StoryPromptService {
   public async decision(
     request: StoryContinueRequest
   ): Promise<StoryWithChoices> {
-    const story = await this.storiesModel.get(request.id);
-    const storyProgression = story.StorySection.reduce((prev, next) => {
+    const sections = await this.storiesModel.getSections(request.id);
+    const storyProgression = sections.reduce((prev, next) => {
       if (next.type === "STORY") {
         prev += next.content;
       }

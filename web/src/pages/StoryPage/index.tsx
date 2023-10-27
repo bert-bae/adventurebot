@@ -50,7 +50,6 @@ const MainPage = () => {
       data: {
         title: "Test Title",
         email: "foo@bar.com",
-        author: "Foo Bar",
         story: "Story about a building that never stops growing.",
       },
     });

@@ -21,7 +21,7 @@ export class StoriesModel {
     const storyId = nanoid();
     await this.prisma.$transaction([
       this.prisma.story.create({
-        data: { id: storyId, title: story.title, authorId: story.authorId },
+        data: { id: storyId, title: story.title, authorId: "1" },
       }),
       this.prisma.storySection.create({
         data: {

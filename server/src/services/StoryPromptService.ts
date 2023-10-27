@@ -15,7 +15,6 @@ export enum StoryEvents {
 export type StoryStartRequest = {
   title: string;
   email: string;
-  authorId: string;
   story: string;
 };
 

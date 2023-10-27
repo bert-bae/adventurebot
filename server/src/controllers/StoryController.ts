@@ -26,25 +26,6 @@ export class StoryController extends Controller {
   ): Promise<StoryWithChoices & { id: string }> {
     const response = await this.storyService.startStory(body);
     return response;
-    // return {
-    //   id: "test",
-    //   story:
-    //     "There once was a building that never stopped growing. It started as a simple structure but soon expanded, floor by floor, into a towering monument. People marveled at its size and wondered what could be inside. Some believed it held great treasures, while others feared it held something dark and dangerous. As the building grew taller, the mystery deepened, and the curiosity of the people grew. What should they do next?",
-    //   choices: [
-    //     {
-    //       type: "active",
-    //       content: "Investigate the building and uncover its secrets.",
-    //     },
-    //     {
-    //       type: "passive",
-    //       content: "Seek guidance from a wise elder about the building",
-    //     },
-    //     {
-    //       type: "neutral",
-    //       content: "Ignore the building and hope it eventually stops growing.",
-    //     },
-    //   ],
-    // };
   }
 
   /**

@@ -7,7 +7,6 @@
 
 export interface StoryStartRequest {
   story: string;
-  author: string;
   email: string;
   title: string;
 }

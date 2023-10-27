@@ -1,21 +1,40 @@
 version: "3"
 
 services:
-  backend:
-    env_file: "./server/.env"
-    build:
-      context: ./server
-      dockerfile: ./Dockerfile
-    image: "adventurebot/server"
+  # backend:
+  #   env_file: "./server/.env"
+  #   build:
+  #     context: ./server
+  #     dockerfile: ./Dockerfile
+  #   image: "adventurebot/server"
+  #   ports:
+  #     - "5000:5000"
+  # web:
+  #   env_file: "./web/.env"
+  #   build:
+  #     context: ./web
+  #     dockerfile: ./Dockerfile
+  #   image: "adventurebot/web"
+  #   ports:
+  #     - "3000:3000"
+  #   links:
+  #     - "backend:be"
+  db:
+    container_name: pg_container
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: postgres
     ports:
-      - "5000:5000"
-  web:
-    env_file: "./web/.env"
-    build:
-      context: ./web
-      dockerfile: ./Dockerfile
-    image: "adventurebot/web"
+      - "5432:5432"
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: local@user.com
+      PGADMIN_DEFAULT_PASSWORD: password
     ports:
-      - "3000:3000"
-    links:
-      - "backend:be"
+      - "5050:80"

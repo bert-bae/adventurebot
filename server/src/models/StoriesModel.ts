@@ -9,12 +9,15 @@ export class StoriesModel {
   }
 
   public async get(id: string) {
-    const stories = await this.prisma.story.findUnique({
+    const story = await this.prisma.story.findUnique({
       where: { id },
       include: { StorySection: true },
     });
-    console.log("stories", JSON.stringify(stories));
-    return [{ story: "", choice: "" }];
+    if (!story) {
+      throw new Error("Story does not exist");
+    }
+
+    return story;
   }
 
   public async create(story: StoryStartRequest) {
@@ -35,12 +38,27 @@ export class StoriesModel {
     return { id: storyId };
   }
 
-  public update(id: string, value: { story?: string; choice?: string }) {
-    // console.log("update", this.inMemoryDatabase);
-    // if (!this.inMemoryDatabase.get(id)) {
-    //   throw new Error("Missing story with ID: " + id);
-    // }
-    // const dbVal = this.inMemoryDatabase.get(id) as [];
-    // this.inMemoryDatabase.update(id, [...dbVal, value]);
+  public async update(
+    storyId: string,
+    value: { choice: string; story: string }
+  ) {
+    await this.prisma.$transaction([
+      this.prisma.storySection.create({
+        data: {
+          id: nanoid(),
+          storyId,
+          content: value.choice!,
+          type: "CHOICE",
+        },
+      }),
+      this.prisma.storySection.create({
+        data: {
+          id: nanoid(),
+          storyId,
+          content: value.story!,
+          type: "STORY",
+        },
+      }),
+    ]);
   }
 }

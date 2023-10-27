@@ -25,6 +25,7 @@ model Story {
   author       User           @relation(fields: [authorId], references: [id])
   authorId     String
   StorySection StorySection[]
+  createdAt    DateTime       @default(now())
 }
 
 // Story section
@@ -34,9 +35,11 @@ enum StorySectionType {
 }
 
 model StorySection {
-  id      String           @id @unique
-  type    StorySectionType
-  content String
-  story   Story            @relation(fields: [storyId], references: [id])
-  storyId String
+  id        String           @id @unique
+  sequence  Int              @default(autoincrement())
+  type      StorySectionType
+  content   String
+  story     Story            @relation(fields: [storyId], references: [id])
+  storyId   String
+  createdAt DateTime         @default(now())
 }

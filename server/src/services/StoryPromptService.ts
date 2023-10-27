@@ -53,6 +53,7 @@ export class StoryPromptService {
     );
 
     const result = this.constructResponse(chatCompletion);
+    request.story = result.story;
     const { id } = await this.storiesModel.create(request);
     return {
       ...result,
@@ -63,19 +64,26 @@ export class StoryPromptService {
   public async decision(
     request: StoryContinueRequest
   ): Promise<StoryWithChoices> {
-    const story = (await this.storiesModel.get(request.id)).reduce(
-      (prev, next) => {
-        prev += next.story;
-        return prev;
-      },
-      ""
+    const story = await this.storiesModel.get(request.id);
+    const storyProgression = story.StorySection.reduce((prev, next) => {
+      if (next.type === "STORY") {
+        prev += next.content;
+      }
+      return prev;
+    }, "");
+    const prompt = this.createDecisionPrompt(
+      storyProgression,
+      request.decision
     );
-    const prompt = this.createDecisionPrompt(story, request.decision);
     const chatCompletion = await this.oai.getPrompt(this.basePrompt, prompt, [
       getStoryWithChoices.schema,
     ]);
-    this.storiesModel.update(request.id, { choice: request.decision });
-    return this.constructResponse(chatCompletion);
+    const response = this.constructResponse(chatCompletion);
+    await this.storiesModel.update(request.id, {
+      choice: request.decision,
+      story: response.story,
+    });
+    return response;
   }
 
   private constructResponse(completion: ChatCompletion): StoryWithChoices {
@@ -88,7 +96,7 @@ export class StoryPromptService {
     } else {
       result = {
         story: completion.choices[0].message.content!,
-        choices: [{ type: "passive", content: "Continue" }],
+        choices: [],
       };
     }
     return result;

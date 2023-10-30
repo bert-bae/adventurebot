@@ -2,17 +2,23 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import "./App.css";
 import { theme } from "theme";
-import StoryPage from "pages/StoryPage";
+import Router from "pages/Router";
+import { BrowserRouter } from "react-router-dom";
+import { CookiesProvider } from "react-cookie";
 const client = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={client}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <StoryPage />
-      </ThemeProvider>
-    </QueryClientProvider>
+    <CookiesProvider>
+      <QueryClientProvider client={client}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <BrowserRouter>
+            <Router />
+          </BrowserRouter>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </CookiesProvider>
   );
 }
 

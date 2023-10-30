@@ -5,7 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface StoryStartRequest {
-  story: string;
-  title: string;
-}
+export type CreateUser201 = {
+  refreshToken: string;
+  token: string;
+};

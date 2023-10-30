@@ -43,6 +43,19 @@ CREATE UNIQUE INDEX "Story_id_key" ON "Story"("authorId");
 -- CreateIndex
 CREATE UNIQUE INDEX "StorySection_id_key" ON "StorySection"("storyId");
 
+-- DropIndex
+DROP INDEX "Story_id_key";
+
+-- DropIndex
+DROP INDEX "StorySection_id_key";
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Story_id_key" ON "Story"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "StorySection_id_key" ON "StorySection"("id");
+
+
 -- AddForeignKey
 ALTER TABLE "Story" ADD CONSTRAINT "Story_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 

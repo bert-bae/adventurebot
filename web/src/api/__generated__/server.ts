@@ -18,14 +18,69 @@ import type {
   MutationFunction
 } from '@tanstack/react-query'
 import type {
+  UserAuthorizationRequest,
+  AuthorizationError,
+  NotFound,
+  PickUserEmailOrPassword,
   StartStory201,
   StoryStartRequest,
   StoryWithChoices,
-  StoryContinueRequest
+  StoryContinueRequest,
+  CreateUser201,
+  PickUserExcludeKeyofUserId
 } from './schemas'
 
 
 
+/**
+ * Pass credentials to verify user login.
+ */
+export const login = (
+    pickUserEmailOrPassword: PickUserEmailOrPassword, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<UserAuthorizationRequest>> => {
+    
+    return axios.post(
+      `/auth/login`,
+      pickUserEmailOrPassword,options
+    );
+  }
+
+
+
+export const getLoginMutationOptions = <TError = AxiosError<AuthorizationError | NotFound>,
+    
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: PickUserEmailOrPassword}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: PickUserEmailOrPassword}, TContext> => {
+ const {mutation: mutationOptions, axios: axiosOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof login>>, {data: PickUserEmailOrPassword}> = (props) => {
+          const {data} = props ?? {};
+
+          return  login(data,axiosOptions)
+        }
+
+        
+
+ 
+   return  { mutationFn, ...mutationOptions }}
+
+    export type LoginMutationResult = NonNullable<Awaited<ReturnType<typeof login>>>
+    export type LoginMutationBody = PickUserEmailOrPassword
+    export type LoginMutationError = AxiosError<AuthorizationError | NotFound>
+
+    export const useLogin = <TError = AxiosError<AuthorizationError | NotFound>,
+    
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: PickUserEmailOrPassword}, TContext>, axios?: AxiosRequestConfig}
+) => {
+    
+      const mutationOptions = getLoginMutationOptions(options);
+     
+      return useMutation(mutationOptions);
+    }
+    
 /**
  * Responds with a new story.
  */
@@ -120,6 +175,52 @@ export const getDecisionMutationOptions = <TError = AxiosError<unknown>,
 ) => {
     
       const mutationOptions = getDecisionMutationOptions(options);
+     
+      return useMutation(mutationOptions);
+    }
+    
+export const createUser = (
+    pickUserExcludeKeyofUserId: PickUserExcludeKeyofUserId, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<CreateUser201>> => {
+    
+    return axios.post(
+      `/users`,
+      pickUserExcludeKeyofUserId,options
+    );
+  }
+
+
+
+export const getCreateUserMutationOptions = <TError = AxiosError<unknown>,
+    
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: PickUserExcludeKeyofUserId}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: PickUserExcludeKeyofUserId}, TContext> => {
+ const {mutation: mutationOptions, axios: axiosOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createUser>>, {data: PickUserExcludeKeyofUserId}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createUser(data,axiosOptions)
+        }
+
+        
+
+ 
+   return  { mutationFn, ...mutationOptions }}
+
+    export type CreateUserMutationResult = NonNullable<Awaited<ReturnType<typeof createUser>>>
+    export type CreateUserMutationBody = PickUserExcludeKeyofUserId
+    export type CreateUserMutationError = AxiosError<unknown>
+
+    export const useCreateUser = <TError = AxiosError<unknown>,
+    
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: PickUserExcludeKeyofUserId}, TContext>, axios?: AxiosRequestConfig}
+) => {
+    
+      const mutationOptions = getCreateUserMutationOptions(options);
      
       return useMutation(mutationOptions);
     }

@@ -34,6 +34,9 @@ export const theme = createTheme({
     text: {
       primary: "#fff",
     },
+    action: {
+      disabled: "rgba(239, 35, 60, 0.5)",
+    },
   },
   typography: {
     fontSize: 14,
@@ -82,6 +85,22 @@ export const theme = createTheme({
         root: {
           color: "#fff",
           textAlign: "end",
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          "& .MuiInputBase-input.Mui-disabled": {
+            WebkitTextFillColor: "white",
+          },
+          ".MuiFormLabel-root": {
+            WebkitTextFillColor: "white",
+          },
+          // Disables default browser autofill background color change
+          "input:-webkit-autofill": {
+            transitionDelay: "9999s",
+          },
         },
       },
     },

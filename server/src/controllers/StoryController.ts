@@ -1,10 +1,20 @@
-import { Controller, Post, Route, SuccessResponse, Tags, Body } from "tsoa";
+import {
+  Controller,
+  Post,
+  Route,
+  SuccessResponse,
+  Tags,
+  Body,
+  Security,
+  Request,
+} from "tsoa";
 import {
   StoryContinueRequest,
   StoryPromptService,
   StoryStartRequest,
 } from "../services/StoryPromptService";
 import { StoryWithChoices } from "../oaiFunctions/getStoryWithChoices";
+import { ExtendedRequest } from "../utils/types/request.type";
 
 @Route("story")
 @Tags("Story")
@@ -20,11 +30,14 @@ export class StoryController extends Controller {
    * @returns StoryContent
    */
   @SuccessResponse(201, "Created")
+  @Security("jwt")
   @Post("")
   public async startStory(
+    @Request() req: ExtendedRequest,
     @Body() body: StoryStartRequest
   ): Promise<StoryWithChoices & { id: string }> {
-    const response = await this.storyService.startStory(body);
+    const user = req.user;
+    const response = await this.storyService.startStory(user.id, body);
     return response;
   }
 

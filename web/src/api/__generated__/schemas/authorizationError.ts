@@ -5,7 +5,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface StoryStartRequest {
-  story: string;
-  title: string;
+export interface AuthorizationError {
+  name: string;
+  message: string;
+  stack?: string;
+  code: number;
 }

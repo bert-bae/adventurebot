@@ -14,7 +14,6 @@ export enum StoryEvents {
 
 export type StoryStartRequest = {
   title: string;
-  email: string;
   story: string;
 };
 
@@ -38,23 +37,24 @@ export class StoryPromptService {
   private basePrompt: string;
   constructor() {
     this.basePrompt =
-      "You are a story teller that lets users decide how to continue the story. After each decision, you extend the story by 100 words and provide 3 choices on how the user should continue the story. Always use the function call getStoryWithChoices({story: string, choices: Array<{ type, content }> }).";
+      "You are a story teller that lets users decide how to continue the story. Your responses should be less than 100 words. Provide 3 choices on how the user should continue the user's story by using the function getStoryWithChoices({story: string, choices: Array<{ type, content }> }).";
     this.oai = new OpenAiService();
     this.storiesModel = new StoriesModel();
   }
 
   public async startStory(
-    request: StoryStartRequest
+    authorId: string,
+    storyStart: StoryStartRequest
   ): Promise<StoryWithChoices & { id: string }> {
     const chatCompletion = await this.oai.getPrompt(
       this.basePrompt,
-      this.createStartPrompt(request),
+      this.createStartPrompt(storyStart),
       [getStoryWithChoices.schema]
     );
 
     const result = this.constructResponse(chatCompletion);
-    request.story = result.story;
-    const { id } = await this.storiesModel.create(request);
+    storyStart.story = result.story;
+    const { id } = await this.storiesModel.create({ ...storyStart, authorId });
     return {
       ...result,
       id,
@@ -75,6 +75,7 @@ export class StoryPromptService {
       storyProgression,
       request.decision
     );
+
     const chatCompletion = await this.oai.getPrompt(this.basePrompt, prompt, [
       getStoryWithChoices.schema,
     ]);
@@ -107,6 +108,6 @@ export class StoryPromptService {
   }
 
   private createDecisionPrompt(story: string, decision: string): string {
-    return `${story}\n User makes the following decision: "${decision}". Continue the story.`;
+    return `Continue the following story:\n\n${story}. ${decision}.`;
   }
 }

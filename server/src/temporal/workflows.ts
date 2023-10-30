@@ -9,42 +9,38 @@ import {
 } from "@temporalio/workflow";
 // Only import the activity types
 import type * as activities from "./activities";
+import { useState } from "./helpers";
 
-const { welcomeNotification } = proxyActivities<typeof activities>({
+const {
+  welcomeNotification,
+  startStoryNotification,
+  storyStartedNotification,
+  storyIdeaNotification,
+} = proxyActivities<typeof activities>({
   startToCloseTimeout: "1 minute",
 });
 
-const useState = <T = any>(name: string, initialValue: T) => {
-  const signal = defineSignal<[T]>(name);
-  const query = defineQuery<T>(name);
-  let state: T = initialValue;
-  return {
-    signal,
-    query,
-    get: () => state,
-    set: (newVal: T) => {
-      state = newVal;
-    },
-    attachHandlers: () => {
-      setHandler(signal, (newVal: T) => void (state = newVal));
-      setHandler(query, () => state);
-    },
-  };
-};
+export const storyStart = useState<boolean>("storyStart", false);
 
-export const cancel = useState<boolean>("cancelSignal", false);
-export const charge = useState<number>("charge", 0);
+export async function firstStoryReminderWorkflow(params: { userId: string }) {
+  storyStart.attachHandlers();
+  if (await condition(() => !storyStart.get(), "30 seconds")) {
+    await startStoryNotification(params.userId);
+  }
+
+  if (await condition(() => !storyStart.get(), "30 seconds")) {
+    await storyIdeaNotification(params.userId);
+  }
+}
 
 export async function welcomeWorkflow(params: { userId: string }) {
   await sleep("5 seconds");
-  let welcomeSent = false;
-  while (!welcomeSent) {
-    const sent = await welcomeNotification(params.userId);
-    welcomeSent = sent;
+  await welcomeNotification(params.userId);
+
+  storyStart.attachHandlers();
+  if (await condition(() => storyStart.get(), "30 seconds")) {
+    await storyStartedNotification(params.userId);
+  } else {
+    await firstStoryReminderWorkflow({ userId: params.userId });
   }
-  // if (await condition(() => cancel.get(), trialPeriod)) {
-  //   await sendCancellationDuringTrialEmail(email);
-  // } else {
-  //   await billingWorkflow(customer);
-  // }
 }

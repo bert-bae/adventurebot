@@ -6,6 +6,7 @@ import Router from "pages/Router";
 import { BrowserRouter } from "react-router-dom";
 import { CookiesProvider } from "react-cookie";
 import { AuthorizationProvider } from "contexts/AuthorizationProvider";
+import { NotificationProvider } from "contexts/NotificationProvider";
 const client = new QueryClient();
 
 function App() {
@@ -13,12 +14,14 @@ function App() {
     <CookiesProvider>
       <QueryClientProvider client={client}>
         <AuthorizationProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <BrowserRouter>
-              <Router />
-            </BrowserRouter>
-          </ThemeProvider>
+          <NotificationProvider>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <BrowserRouter>
+                <Router />
+              </BrowserRouter>
+            </ThemeProvider>
+          </NotificationProvider>
         </AuthorizationProvider>
       </QueryClientProvider>
     </CookiesProvider>

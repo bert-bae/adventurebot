@@ -19,7 +19,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
 
-    websocket.on("notify", (data) => {
+    websocket.on("message", (data) => {
       const notification = JSON.parse(data);
       toast(notification.message, {
         closeOnClick: true,

@@ -2,10 +2,13 @@ import {
   Body,
   Controller,
   Example,
+  Get,
   Post,
   Response,
   Route,
+  Security,
   SuccessResponse,
+  Request,
   Tags,
 } from "tsoa";
 import bcrypt from "bcrypt";
@@ -13,6 +16,7 @@ import { UserService } from "../services/UserService";
 import { User } from "@prisma/client";
 import { AuthorizationError, NotFound } from "../utils/errors";
 import { signToken } from "../utils/auth";
+import { ExtendedRequest } from "../utils/types/request.type";
 
 type UserLoginRequest = Pick<User, "email" | "password">;
 type UserAuthorizationRequest = { token: string; refreshToken: string };
@@ -72,5 +76,26 @@ export class AuthorizationController extends Controller {
       token,
       refreshToken,
     };
+  }
+
+  /**
+   * Pass JWT token to validate the user and return the decoded value.
+   * @param token JWT token of the user
+   * @example login {
+   *  "password": "SomeSecurePassword12345",
+   *  "email": "test@example.com"
+   * }
+   */
+  @SuccessResponse(200, "Authenticated")
+  @Response<NotFound>(400, "Invalid Token")
+  @Get("/validate")
+  @Security("jwt")
+  @Example<{ token: string }>({
+    token: "jwt",
+  })
+  public async validate(
+    @Request() req: ExtendedRequest
+  ): Promise<Omit<User, "password">> {
+    return req.user;
   }
 }

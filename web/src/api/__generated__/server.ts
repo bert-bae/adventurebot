@@ -11,17 +11,23 @@ import type {
   AxiosError
 } from 'axios'
 import {
+  useQuery,
   useMutation
 } from '@tanstack/react-query'
 import type {
+  UseQueryOptions,
   UseMutationOptions,
-  MutationFunction
+  QueryFunction,
+  MutationFunction,
+  UseQueryResult,
+  QueryKey
 } from '@tanstack/react-query'
 import type {
   UserAuthorizationRequest,
   AuthorizationError,
   NotFound,
   PickUserEmailOrPassword,
+  PickUserExcludeKeyofUserPassword,
   StartStory201,
   StoryStartRequest,
   StoryWithChoices,
@@ -81,6 +87,62 @@ export const getLoginMutationOptions = <TError = AxiosError<AuthorizationError |
       return useMutation(mutationOptions);
     }
     
+/**
+ * Pass JWT token to validate the user and return the decoded value.
+ */
+export const validate = (
+     options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<PickUserExcludeKeyofUserPassword>> => {
+    
+    return axios.get(
+      `/auth/validate`,options
+    );
+  }
+
+
+export const getValidateQueryKey = () => {
+    
+    return [`/auth/validate`] as const;
+    }
+  
+
+    
+export const getValidateQueryOptions = <TData = Awaited<ReturnType<typeof validate>>, TError = AxiosError<NotFound>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof validate>>, TError, TData>, axios?: AxiosRequestConfig}
+) => {
+    
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getValidateQueryKey();
+
+  
+  
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof validate>>> = ({ signal }) => validate({ signal, ...axiosOptions });
+
+      
+    
+      
+      
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof validate>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ValidateQueryResult = NonNullable<Awaited<ReturnType<typeof validate>>>
+export type ValidateQueryError = AxiosError<NotFound>
+
+export const useValidate = <TData = Awaited<ReturnType<typeof validate>>, TError = AxiosError<NotFound>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof validate>>, TError, TData>, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+
+  const queryOptions = getValidateQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
 /**
  * Responds with a new story.
  */

@@ -9,14 +9,14 @@ import {
 } from "@mui/material";
 import { useCreateUser } from "api/__generated__/server";
 import MuiButton from "components/MuiButton";
+import { useAuthContext } from "contexts/AuthorizationProvider";
 import Page from "layout/Page";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuthCookie from "utils/hooks/useAuthCookie";
 
 const RegistrationPage = () => {
   const [registrationError, setRegistrationError] = useState<boolean>(false);
-  const { addToken, addRefreshToken } = useAuthCookie();
+  const { addToken, addRefreshToken } = useAuthContext();
   const navigate = useNavigate();
   const { mutate: register, isLoading } = useCreateUser({
     mutation: {

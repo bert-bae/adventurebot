@@ -4,8 +4,8 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import styled from "@emotion/styled";
 import { Button, Typography } from "@mui/material";
-import useAuthCookie from "utils/hooks/useAuthCookie";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "contexts/AuthorizationProvider";
 
 type NavigationBarProps = {};
 
@@ -16,7 +16,7 @@ const StyledAppBar = styled(AppBar)`
 `;
 
 const NavigationBar: React.FC<NavigationBarProps> = () => {
-  const { token, removeToken } = useAuthCookie();
+  const { state, removeToken } = useAuthContext();
   const navigate = useNavigate();
 
   return (
@@ -25,12 +25,12 @@ const NavigationBar: React.FC<NavigationBarProps> = () => {
         <Box sx={{ flexGrow: 1 }}>
           <Typography variant="h2">Bertcode | AdventureBot</Typography>
         </Box>
-        {!token && (
+        {!state.user.id && (
           <Button variant="outlined" onClick={() => navigate("/login")}>
             Login
           </Button>
         )}
-        {!!token && (
+        {!!state.user.id && (
           <Button
             variant="outlined"
             onClick={() => {

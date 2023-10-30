@@ -3,7 +3,7 @@ import LoginPage from "./LoginPage";
 import StoryPage from "./StoryPage";
 import ProtectedRoute from "./ProtectedRoute";
 import RegistrationPage from "./RegistrationPage";
-import useAuthCookie from "utils/hooks/useAuthCookie";
+import { useAuthContext } from "contexts/AuthorizationProvider";
 
 const PATHS = {
   login: "/login",
@@ -12,10 +12,12 @@ const PATHS = {
 };
 
 const Router = () => {
-  const { token } = useAuthCookie();
+  const {
+    state: { user },
+  } = useAuthContext();
   const location = useLocation();
   if (
-    !!token &&
+    !!user.id &&
     (location.pathname === "/login" || location.pathname === "/register")
   ) {
     return (

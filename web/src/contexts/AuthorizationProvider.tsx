@@ -1,19 +1,21 @@
-import React, { Provider, useEffect, useState } from "react";
+import { useValidate } from "api/__generated__/server";
+import React, { useEffect, useState } from "react";
 import useAuthCookie from "utils/hooks/useAuthCookie";
 
 export type AuthContext = {
   state: {
-    user: { id?: string; name?: string; email?: string };
+    user: { id: string | null; name: string | null; email: string | null };
     token?: string;
   };
-  addToken: (token: string) => void;
+  addToken: (token: string, path?: string) => void;
+  addRefreshToken: (token: string) => void;
   removeToken: () => void;
 };
 
 const defaultUser = {
-  id: undefined,
-  name: undefined,
-  email: undefined,
+  id: null,
+  name: null,
+  email: null,
 };
 const defaultValues: AuthContext = {
   state: {
@@ -21,6 +23,7 @@ const defaultValues: AuthContext = {
     token: undefined,
   },
   addToken: (token: string) => {},
+  addRefreshToken: (token: string) => {},
   removeToken: () => {},
 };
 
@@ -30,15 +33,28 @@ export const AuthorizationContext =
 export const AuthorizationProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { token, addToken, removeToken } = useAuthCookie();
+  const { token, addToken, addRefreshToken, removeToken } = useAuthCookie();
   const [user, setUser] = useState<AuthContext["state"]["user"]>(defaultUser);
+  const { refetch } = useValidate({
+    query: {
+      enabled: false,
+      queryKey: [token],
+      onSuccess: ({ data }) => {
+        setUser(data);
+      },
+      onError: () => {
+        removeToken();
+      },
+    },
+  });
 
   useEffect(() => {
     if (token) {
+      refetch();
     } else {
       setUser(defaultUser);
     }
-  }, [token]);
+  }, [token, refetch]);
 
   return (
     <AuthorizationContext.Provider
@@ -48,6 +64,7 @@ export const AuthorizationProvider: React.FC<{ children: React.ReactNode }> = ({
           token,
         },
         addToken,
+        addRefreshToken,
         removeToken,
       }}
     >
@@ -55,3 +72,5 @@ export const AuthorizationProvider: React.FC<{ children: React.ReactNode }> = ({
     </AuthorizationContext.Provider>
   );
 };
+
+export const useAuthContext = () => React.useContext(AuthorizationContext);

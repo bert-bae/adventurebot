@@ -4,6 +4,13 @@ import swaggerUi from "swagger-ui-express";
 import cors from "cors";
 import { RegisterRoutes } from "../__generated__/routes";
 import { websocket } from "./websocket";
+import { worker } from "./temporal/worker";
+import log from "loglevel";
+
+log.setDefaultLevel("debug");
+if (process.env.LOG_LEVEL) {
+  log.setLevel(process.env.LOG_LEVEL as any);
+}
 
 require("dotenv").config();
 
@@ -52,6 +59,7 @@ app.use(function notFoundHandler(_req, res: Response) {
 });
 
 websocket();
+worker();
 
 app.listen(process.env.PORT, () => {
   console.log("Listening to ", process.env.PORT);

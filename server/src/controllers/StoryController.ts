@@ -15,7 +15,6 @@ import {
 } from "../services/StoryPromptService";
 import { StoryWithChoices } from "../oaiFunctions/getStoryWithChoices";
 import { ExtendedRequest } from "../utils/types/request.type";
-import { getWsConnection } from "../websocket";
 
 @Route("story")
 @Tags("Story")
@@ -39,9 +38,6 @@ export class StoryController extends Controller {
   ): Promise<StoryWithChoices & { id: string }> {
     const user = req.user;
     const response = await this.storyService.startStory(user.id, body);
-    getWsConnection(user.id)?.send(
-      JSON.stringify({ type: "info", message: "Story created" })
-    );
     return response;
   }
 

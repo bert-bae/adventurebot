@@ -6,6 +6,12 @@ export const useWebsocket = (url: string, userId: string | null) => {
     null
   );
 
+  const unset = (id: string) => {
+    if (websocket) {
+      websocket.emit("unsetSocketId", id);
+    }
+  };
+
   useEffect(() => {
     const socket = io(url);
     setWebsocket(socket);
@@ -15,10 +21,14 @@ export const useWebsocket = (url: string, userId: string | null) => {
   }, []);
 
   useEffect(() => {
-    if (websocket && userId) {
+    if (!websocket) {
+      return;
+    }
+
+    if (userId) {
       websocket.emit("setSocketId", userId);
     }
   }, [websocket, userId]);
 
-  return websocket;
+  return { websocket, unset };
 };

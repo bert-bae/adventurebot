@@ -17,6 +17,7 @@ import { User } from "@prisma/client";
 import { AuthorizationError, NotFound } from "../utils/errors";
 import { signToken } from "../utils/auth";
 import { ExtendedRequest } from "../utils/types/request.type";
+import { startWelcomeWf } from "../temporal/client";
 
 type UserLoginRequest = Pick<User, "email" | "password">;
 type UserAuthorizationRequest = { token: string; refreshToken: string };
@@ -72,6 +73,7 @@ export class AuthorizationController extends Controller {
       },
       "48h"
     );
+    await startWelcomeWf(user.id);
     return {
       token,
       refreshToken,

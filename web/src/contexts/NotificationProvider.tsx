@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useAuthContext } from "./AuthorizationProvider";
-import { useWebsocket } from "utils/hooks/useWebsocket";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -9,26 +8,21 @@ const NotificationContext = React.createContext(null);
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const {
-    state: { user },
-  } = useAuthContext();
-  const websocket = useWebsocket(`ws://localhost:5001`, user?.id);
+  const { ws } = useAuthContext();
 
   useEffect(() => {
-    if (!websocket) {
+    if (!ws) {
       return;
     }
 
-    websocket.on("message", (data) => {
+    ws.on("message", (data) => {
       const notification = JSON.parse(data);
       toast(notification.message, {
         closeOnClick: true,
         type: notification.type,
       });
     });
-  }, [websocket]);
-
-  const handleClose = (id: string) => {};
+  }, [ws]);
 
   return (
     <NotificationContext.Provider value={null}>

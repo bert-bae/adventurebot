@@ -1,12 +1,15 @@
 import { useValidate } from "api/__generated__/server";
 import React, { useEffect, useState } from "react";
+import { Socket } from "socket.io-client";
 import useAuthCookie from "utils/hooks/useAuthCookie";
+import { useWebsocket } from "utils/hooks/useWebsocket";
 
 export type AuthContext = {
   state: {
     user: { id: string | null; name: string | null; email: string | null };
     token?: string;
   };
+  ws: Socket | null;
   addToken: (token: string, path?: string) => void;
   addRefreshToken: (token: string) => void;
   removeToken: () => void;
@@ -22,6 +25,7 @@ const defaultValues: AuthContext = {
     user: defaultUser,
     token: undefined,
   },
+  ws: null,
   addToken: (token: string) => {},
   addRefreshToken: (token: string) => {},
   removeToken: () => {},
@@ -35,6 +39,13 @@ export const AuthorizationProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { token, addToken, addRefreshToken, removeToken } = useAuthCookie();
   const [user, setUser] = useState<AuthContext["state"]["user"]>(defaultUser);
+  const { websocket, unset } = useWebsocket(`ws://localhost:5001`, user?.id);
+
+  const unsetUser = () => {
+    unset(user.id!);
+    removeToken();
+  };
+
   const { refetch } = useValidate({
     query: {
       enabled: false,
@@ -43,7 +54,7 @@ export const AuthorizationProvider: React.FC<{ children: React.ReactNode }> = ({
         setUser(data);
       },
       onError: () => {
-        removeToken();
+        unsetUser();
       },
     },
   });
@@ -63,9 +74,10 @@ export const AuthorizationProvider: React.FC<{ children: React.ReactNode }> = ({
           user,
           token,
         },
+        ws: websocket,
         addToken,
         addRefreshToken,
-        removeToken,
+        removeToken: unsetUser,
       }}
     >
       {children}

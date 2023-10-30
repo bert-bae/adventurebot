@@ -12,6 +12,7 @@ import { UserService } from "../services/UserService";
 import { User } from "@prisma/client";
 import { signToken } from "../utils/auth";
 import { BadRequest } from "../utils/errors";
+import { startWelcomeWf } from "../temporal/client";
 
 @Route("users")
 @Tags("Users")
@@ -39,6 +40,9 @@ export class UserController extends Controller {
     const { id, name, email } = await this.userService.create(user);
     const token = signToken({ id, name, email }, "6h");
     const refreshToken = signToken({ id, name, email }, "48h");
+
+    // Start temporal workflow
+    await startWelcomeWf(id);
     return { token, refreshToken };
   }
 }

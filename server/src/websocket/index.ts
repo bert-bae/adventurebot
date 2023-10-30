@@ -1,4 +1,7 @@
-import { Server } from "socket.io";
+import { nanoid } from "nanoid";
+import { Server, Socket } from "socket.io";
+
+const socketIds: Record<string, Socket> = {};
 
 export const websocket = () => {
   const io = new Server(+process.env.WEBSOCKET_PORT!, {
@@ -9,8 +12,12 @@ export const websocket = () => {
   });
 
   io.on("connection", (socket) => {
-    socket.on("message", (args) => {
-      socket.send(args);
+    socket.on("setSocketId", (id: string) => {
+      socketIds[id] = socket;
+      socket.emit(
+        "notify",
+        JSON.stringify({ type: "info", message: "hello world" })
+      );
     });
   });
 };

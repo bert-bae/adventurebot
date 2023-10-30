@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-export const useWebsocket = (url: string) => {
+export const useWebsocket = (url: string, userId: string | null) => {
   const [websocket, setWebsocket] = useState<ReturnType<typeof io> | null>(
     null
   );
@@ -13,6 +13,12 @@ export const useWebsocket = (url: string) => {
       socket.close();
     };
   }, []);
+
+  useEffect(() => {
+    if (websocket && userId) {
+      websocket.emit("setSocketId", userId);
+    }
+  }, [websocket, userId]);
 
   return websocket;
 };

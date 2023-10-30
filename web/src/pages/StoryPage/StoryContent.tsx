@@ -69,7 +69,7 @@ const StoryContent = ({
           <a href="#bottomTarget" />
         </Box>
       </Grid>
-      <Grid item lg={5} md={12}>
+      <Grid item lg={5} md={12} width="100%">
         {isDecisionLoading && (
           <>
             <Skeleton sx={{ display: "block", height: "40px", mt: 2, mb: 2 }} />

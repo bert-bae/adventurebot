@@ -30,11 +30,11 @@ export class StoriesModel {
     return sections;
   }
 
-  public async create(story: StoryStartRequest) {
+  public async create(story: StoryStartRequest & { authorId: string }) {
     const storyId = nanoid();
     await this.prisma.$transaction([
       this.prisma.story.create({
-        data: { id: storyId, title: story.title, authorId: "1" },
+        data: { id: storyId, title: story.title, authorId: story.authorId },
       }),
       this.prisma.storySection.create({
         data: {

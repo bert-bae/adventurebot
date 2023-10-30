@@ -11,7 +11,7 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: process.env.ALLOWED_CORS, credentials: true }));
 
 if (process.env.NODE_ENVIRONMENT === "development") {
   app.get("/swagger/openapi.json", async (_req: Request, res: Response) => {

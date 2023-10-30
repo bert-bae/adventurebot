@@ -12,7 +12,7 @@ import { useTheme } from "@emotion/react";
 // import { useWebsocket } from "utils/hooks/useWebsocket";
 // const websocket = useWebsocket(`ws://localhost:5001`);
 
-const MainPage = () => {
+const StoryPage = () => {
   const theme = useTheme();
   const isLarge = useMediaQuery(theme.breakpoints.up(1200));
   const [storyId, setStoryId] = useState<string>("");
@@ -37,7 +37,6 @@ const MainPage = () => {
     start({
       data: {
         title: "Test Title",
-        email: "foo@bar.com",
         story: "Story about a building that never stops growing.",
       },
     });
@@ -86,4 +85,4 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default StoryPage;

@@ -11,19 +11,136 @@ import type {
   AxiosError
 } from 'axios'
 import {
+  useQuery,
   useMutation
 } from '@tanstack/react-query'
 import type {
+  UseQueryOptions,
   UseMutationOptions,
-  MutationFunction
+  QueryFunction,
+  MutationFunction,
+  UseQueryResult,
+  QueryKey
 } from '@tanstack/react-query'
 import type {
+  UserAuthorizationRequest,
+  AuthorizationError,
+  NotFound,
+  PickUserEmailOrPassword,
+  PickUserExcludeKeyofUserPassword,
   StartStory201,
   StoryStartRequest,
   StoryWithChoices,
-  StoryContinueRequest
+  StoryContinueRequest,
+  CreateUser201,
+  PickUserExcludeKeyofUserId
 } from './schemas'
 
+
+
+/**
+ * Pass credentials to verify user login.
+ */
+export const login = (
+    pickUserEmailOrPassword: PickUserEmailOrPassword, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<UserAuthorizationRequest>> => {
+    
+    return axios.post(
+      `/auth/login`,
+      pickUserEmailOrPassword,options
+    );
+  }
+
+
+
+export const getLoginMutationOptions = <TError = AxiosError<AuthorizationError | NotFound>,
+    
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: PickUserEmailOrPassword}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: PickUserEmailOrPassword}, TContext> => {
+ const {mutation: mutationOptions, axios: axiosOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof login>>, {data: PickUserEmailOrPassword}> = (props) => {
+          const {data} = props ?? {};
+
+          return  login(data,axiosOptions)
+        }
+
+        
+
+ 
+   return  { mutationFn, ...mutationOptions }}
+
+    export type LoginMutationResult = NonNullable<Awaited<ReturnType<typeof login>>>
+    export type LoginMutationBody = PickUserEmailOrPassword
+    export type LoginMutationError = AxiosError<AuthorizationError | NotFound>
+
+    export const useLogin = <TError = AxiosError<AuthorizationError | NotFound>,
+    
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: PickUserEmailOrPassword}, TContext>, axios?: AxiosRequestConfig}
+) => {
+    
+      const mutationOptions = getLoginMutationOptions(options);
+     
+      return useMutation(mutationOptions);
+    }
+    
+/**
+ * Pass JWT token to validate the user and return the decoded value.
+ */
+export const validate = (
+     options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<PickUserExcludeKeyofUserPassword>> => {
+    
+    return axios.get(
+      `/auth/validate`,options
+    );
+  }
+
+
+export const getValidateQueryKey = () => {
+    
+    return [`/auth/validate`] as const;
+    }
+  
+
+    
+export const getValidateQueryOptions = <TData = Awaited<ReturnType<typeof validate>>, TError = AxiosError<NotFound>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof validate>>, TError, TData>, axios?: AxiosRequestConfig}
+) => {
+    
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getValidateQueryKey();
+
+  
+  
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof validate>>> = ({ signal }) => validate({ signal, ...axiosOptions });
+
+      
+    
+      
+      
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof validate>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ValidateQueryResult = NonNullable<Awaited<ReturnType<typeof validate>>>
+export type ValidateQueryError = AxiosError<NotFound>
+
+export const useValidate = <TData = Awaited<ReturnType<typeof validate>>, TError = AxiosError<NotFound>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof validate>>, TError, TData>, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+
+  const queryOptions = getValidateQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
 
 
 /**
@@ -120,6 +237,52 @@ export const getDecisionMutationOptions = <TError = AxiosError<unknown>,
 ) => {
     
       const mutationOptions = getDecisionMutationOptions(options);
+     
+      return useMutation(mutationOptions);
+    }
+    
+export const createUser = (
+    pickUserExcludeKeyofUserId: PickUserExcludeKeyofUserId, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<CreateUser201>> => {
+    
+    return axios.post(
+      `/users`,
+      pickUserExcludeKeyofUserId,options
+    );
+  }
+
+
+
+export const getCreateUserMutationOptions = <TError = AxiosError<unknown>,
+    
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: PickUserExcludeKeyofUserId}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: PickUserExcludeKeyofUserId}, TContext> => {
+ const {mutation: mutationOptions, axios: axiosOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createUser>>, {data: PickUserExcludeKeyofUserId}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createUser(data,axiosOptions)
+        }
+
+        
+
+ 
+   return  { mutationFn, ...mutationOptions }}
+
+    export type CreateUserMutationResult = NonNullable<Awaited<ReturnType<typeof createUser>>>
+    export type CreateUserMutationBody = PickUserExcludeKeyofUserId
+    export type CreateUserMutationError = AxiosError<unknown>
+
+    export const useCreateUser = <TError = AxiosError<unknown>,
+    
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: PickUserExcludeKeyofUserId}, TContext>, axios?: AxiosRequestConfig}
+) => {
+    
+      const mutationOptions = getCreateUserMutationOptions(options);
      
       return useMutation(mutationOptions);
     }

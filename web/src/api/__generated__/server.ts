@@ -28,6 +28,7 @@ import type {
   NotFound,
   PickUserEmailOrPassword,
   PickUserExcludeKeyofUserPassword,
+  GetStory200,
   TsoaMapStory,
   StartStory201,
   StoryStartRequest,
@@ -144,6 +145,110 @@ export const useValidate = <TData = Awaited<ReturnType<typeof validate>>, TError
 }
 
 
+/**
+ * Returns one story by its ID
+ */
+export const getStory = (
+    id: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<GetStory200>> => {
+    
+    return axios.get(
+      `/story/${id}`,options
+    );
+  }
+
+
+export const getGetStoryQueryKey = (id: string,) => {
+    
+    return [`/story/${id}`] as const;
+    }
+  
+
+    
+export const getGetStoryQueryOptions = <TData = Awaited<ReturnType<typeof getStory>>, TError = AxiosError<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getStory>>, TError, TData>, axios?: AxiosRequestConfig}
+) => {
+    
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetStoryQueryKey(id);
+
+  
+  
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getStory>>> = ({ signal }) => getStory(id, { signal, ...axiosOptions });
+
+      
+    
+      
+      
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getStory>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetStoryQueryResult = NonNullable<Awaited<ReturnType<typeof getStory>>>
+export type GetStoryQueryError = AxiosError<unknown>
+
+export const useGetStory = <TData = Awaited<ReturnType<typeof getStory>>, TError = AxiosError<unknown>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getStory>>, TError, TData>, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+
+  const queryOptions = getGetStoryQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+/**
+ * Finishes generating the story and choices and creates the workflow process to mark the story as published.
+ */
+export const endStory = (
+    id: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    return axios.post(
+      `/story/${id}`,undefined,options
+    );
+  }
+
+
+
+export const getEndStoryMutationOptions = <TError = AxiosError<unknown>,
+    
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof endStory>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof endStory>>, TError,{id: string}, TContext> => {
+ const {mutation: mutationOptions, axios: axiosOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof endStory>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  endStory(id,axiosOptions)
+        }
+
+        
+
+ 
+   return  { mutationFn, ...mutationOptions }}
+
+    export type EndStoryMutationResult = NonNullable<Awaited<ReturnType<typeof endStory>>>
+    
+    export type EndStoryMutationError = AxiosError<unknown>
+
+    export const useEndStory = <TError = AxiosError<unknown>,
+    
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof endStory>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+) => {
+    
+      const mutationOptions = getEndStoryMutationOptions(options);
+     
+      return useMutation(mutationOptions);
+    }
+    
 /**
  * List of all of the user's stories
  */
@@ -294,54 +399,6 @@ export const getDecisionMutationOptions = <TError = AxiosError<unknown>,
 ) => {
     
       const mutationOptions = getDecisionMutationOptions(options);
-     
-      return useMutation(mutationOptions);
-    }
-    
-/**
- * Finishes generating the story and choices and creates the workflow process to mark the story as published.
- */
-export const endStory = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    
-    return axios.post(
-      `/story/${id}`,undefined,options
-    );
-  }
-
-
-
-export const getEndStoryMutationOptions = <TError = AxiosError<unknown>,
-    
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof endStory>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationOptions<Awaited<ReturnType<typeof endStory>>, TError,{id: string}, TContext> => {
- const {mutation: mutationOptions, axios: axiosOptions} = options ?? {};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof endStory>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
-
-          return  endStory(id,axiosOptions)
-        }
-
-        
-
- 
-   return  { mutationFn, ...mutationOptions }}
-
-    export type EndStoryMutationResult = NonNullable<Awaited<ReturnType<typeof endStory>>>
-    
-    export type EndStoryMutationError = AxiosError<unknown>
-
-    export const useEndStory = <TError = AxiosError<unknown>,
-    
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof endStory>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
-) => {
-    
-      const mutationOptions = getEndStoryMutationOptions(options);
      
       return useMutation(mutationOptions);
     }

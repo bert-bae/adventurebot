@@ -17,8 +17,9 @@ import {
 import { StoryWithChoices } from "../oaiFunctions/getStoryWithChoices";
 import { ExtendedRequest } from "../utils/types/request.type";
 import { storyProgressionWf } from "../temporal/client";
-import { Story } from "@prisma/client";
+import { Story, StorySection } from "@prisma/client";
 import { TsoaMap } from "../utils/types/util.type";
+import { StorySchema, StorySectionSchema } from "../models/tsoa.schemas";
 
 @Route("story")
 @Tags("Story")
@@ -30,8 +31,23 @@ export class StoryController extends Controller {
   }
 
   /**
+   * Returns one story by its ID
+   * @returns Story[]
+   */
+  @SuccessResponse(200, "Success")
+  @Security("jwt")
+  @Get("/{id}")
+  public async getStory(
+    id: string,
+    @Request() req: ExtendedRequest
+    // Tsoa generator has issues recognizing extended types. This is resolved if we wrap it in a type util that infers it
+  ): Promise<StorySchema & { StorySection: StorySectionSchema[] }> {
+    return this.storyService.get(id);
+  }
+
+  /**
    * List of all of the user's stories
-   * @returns StoryContent[]
+   * @returns Story[]
    */
   @SuccessResponse(200, "Success")
   @Security("jwt")

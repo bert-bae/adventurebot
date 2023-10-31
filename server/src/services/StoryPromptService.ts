@@ -45,6 +45,10 @@ export class StoryPromptService {
     this.storiesModel = new StoriesModel();
   }
 
+  public async get(id: string) {
+    return this.storiesModel.get(id);
+  }
+
   public async list(where: Prisma.StoryWhereInput) {
     const stories = await this.storiesModel.list(where);
     return stories;

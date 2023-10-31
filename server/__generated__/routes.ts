@@ -68,6 +68,26 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"id":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"content":{"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},"published":{"dataType":"boolean","required":true},"authorId":{"dataType":"string","required":true},"createdAt":{"dataType":"datetime","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "StorySchema": {
+        "dataType": "refAlias",
+        "type": {"ref":"TsoaMap_Story_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Pick_TsoaMap_StorySection_.Exclude_keyofTsoaMap_StorySection_.type__": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"id":{"dataType":"string","required":true},"content":{"dataType":"string","required":true},"createdAt":{"dataType":"datetime","required":true},"sequence":{"dataType":"double","required":true},"storyId":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Omit_TsoaMap_StorySection_.type_": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_TsoaMap_StorySection_.Exclude_keyofTsoaMap_StorySection_.type__","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "StorySectionSchema": {
+        "dataType": "refAlias",
+        "type": {"dataType":"intersection","subSchemas":[{"ref":"Omit_TsoaMap_StorySection_.type_"},{"dataType":"nestedObjectLiteral","nestedProperties":{"type":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["CHOICE"]},{"dataType":"enum","enums":["STORY"]}],"required":true}}}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "StoryWithChoices": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"choices":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"content":{"dataType":"string","required":true},"type":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["active"]},{"dataType":"enum","enums":["passive"]},{"dataType":"enum","enums":["neutral"]}],"required":true}}},"required":true},"story":{"dataType":"string","required":true}},"validators":{}},
@@ -148,6 +168,33 @@ export function RegisterRoutes(app: Router) {
 
 
               const promise = controller.validate.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/story/:id',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(StoryController)),
+            ...(fetchMiddlewares<RequestHandler>(StoryController.prototype.getStory)),
+
+            function StoryController_getStory(request: any, response: any, next: any) {
+            const args = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                    req: {"in":"request","name":"req","required":true,"dataType":"object"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new StoryController();
+
+
+              const promise = controller.getStory.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, 200, next);
             } catch (err) {
                 return next(err);

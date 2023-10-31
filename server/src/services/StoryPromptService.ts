@@ -6,6 +6,7 @@ import getStoryWithChoices, {
 import { StoriesModel } from "../models/StoriesModel";
 import { sendSignal, workflowIds } from "../temporal/client";
 import { stopStory } from "../temporal/workflows";
+import { Prisma } from "@prisma/client";
 
 export enum StoryEvents {
   Start = "Start",
@@ -42,6 +43,11 @@ export class StoryPromptService {
       "You are a story teller that lets users decide how to continue the story. Your responses should be less than 100 words. Provide 3 choices on how the user should continue the user's story by using the function getStoryWithChoices({story: string, choices: Array<{ type, content }> }).";
     this.oai = new OpenAiService();
     this.storiesModel = new StoriesModel();
+  }
+
+  public async list(where: Prisma.StoryWhereInput) {
+    const stories = await this.storiesModel.list(where);
+    return stories;
   }
 
   public async startStory(

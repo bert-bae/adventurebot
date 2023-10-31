@@ -1,13 +1,17 @@
 import { nanoid } from "nanoid";
 import { StoryStartRequest } from "../services/StoryPromptService";
 import { prisma } from "../db/pg";
-import { Story } from "@prisma/client";
+import { Prisma, Story } from "@prisma/client";
 
 export type UpdateStoryRequest = Partial<Omit<Story, "id" | "authorId">>;
 export class StoriesModel {
   private prisma: typeof prisma;
   constructor() {
     this.prisma = prisma;
+  }
+
+  public async list(where: Prisma.StoryWhereInput) {
+    return this.prisma.story.findMany({ where });
   }
 
   public async get(id: string) {

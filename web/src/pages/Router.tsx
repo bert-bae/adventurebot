@@ -4,11 +4,13 @@ import StoryPage from "./StoryPage";
 import ProtectedRoute from "./ProtectedRoute";
 import RegistrationPage from "./RegistrationPage";
 import { useAuthContext } from "contexts/AuthorizationProvider";
+import StoriesListPage from "./StoriesListPage";
 
 const PATHS = {
   login: "/login",
   register: "/register",
   stories: "/stories",
+  createStory: "/stories/:storyId",
 };
 
 const Router = () => {
@@ -29,6 +31,14 @@ const Router = () => {
     <Routes>
       <Route
         path={PATHS.stories}
+        element={
+          <ProtectedRoute>
+            <StoriesListPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={PATHS.createStory}
         element={
           <ProtectedRoute>
             <StoryPage />

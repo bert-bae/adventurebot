@@ -28,6 +28,7 @@ import type {
   NotFound,
   PickUserEmailOrPassword,
   PickUserExcludeKeyofUserPassword,
+  TsoaMapStory,
   StartStory201,
   StoryStartRequest,
   StoryWithChoices,
@@ -134,6 +135,62 @@ export const useValidate = <TData = Awaited<ReturnType<typeof validate>>, TError
   ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
 
   const queryOptions = getValidateQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+/**
+ * List of all of the user's stories
+ */
+export const listStories = (
+     options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<TsoaMapStory[]>> => {
+    
+    return axios.get(
+      `/story`,options
+    );
+  }
+
+
+export const getListStoriesQueryKey = () => {
+    
+    return [`/story`] as const;
+    }
+  
+
+    
+export const getListStoriesQueryOptions = <TData = Awaited<ReturnType<typeof listStories>>, TError = AxiosError<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listStories>>, TError, TData>, axios?: AxiosRequestConfig}
+) => {
+    
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListStoriesQueryKey();
+
+  
+  
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listStories>>> = ({ signal }) => listStories({ signal, ...axiosOptions });
+
+      
+    
+      
+      
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listStories>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListStoriesQueryResult = NonNullable<Awaited<ReturnType<typeof listStories>>>
+export type ListStoriesQueryError = AxiosError<unknown>
+
+export const useListStories = <TData = Awaited<ReturnType<typeof listStories>>, TError = AxiosError<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listStories>>, TError, TData>, axios?: AxiosRequestConfig}
+
+  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+
+  const queryOptions = getListStoriesQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

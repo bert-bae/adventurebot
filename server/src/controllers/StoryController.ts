@@ -7,6 +7,7 @@ import {
   Body,
   Security,
   Request,
+  Get,
 } from "tsoa";
 import {
   StoryContinueRequest,
@@ -16,6 +17,8 @@ import {
 import { StoryWithChoices } from "../oaiFunctions/getStoryWithChoices";
 import { ExtendedRequest } from "../utils/types/request.type";
 import { storyProgressionWf } from "../temporal/client";
+import { Story } from "@prisma/client";
+import { TsoaMap } from "../utils/types/util.type";
 
 @Route("story")
 @Tags("Story")
@@ -24,6 +27,22 @@ export class StoryController extends Controller {
   constructor() {
     super();
     this.storyService = new StoryPromptService();
+  }
+
+  /**
+   * List of all of the user's stories
+   * @returns StoryContent[]
+   */
+  @SuccessResponse(200, "Success")
+  @Security("jwt")
+  @Get("")
+  public async listStories(
+    @Request() req: ExtendedRequest
+    // Tsoa generator has issues recognizing extended types. This is resolved if we wrap it in a type util that infers it
+  ): Promise<TsoaMap<Story>[]> {
+    const user = req.user;
+    const stories = await this.storyService.list({ authorId: user.id });
+    return stories;
   }
 
   /**

@@ -7,7 +7,6 @@
 
 export * from './authorizationError';
 export * from './createUser201';
-export * from './decision200';
 export * from './notFound';
 export * from './omitUserId';
 export * from './omitUserPassword';
@@ -21,5 +20,6 @@ export * from './storyStartRequest';
 export * from './storyWithChoices';
 export * from './storyWithChoicesChoicesItem';
 export * from './storyWithChoicesChoicesItemType';
+export * from './tsoaMapStory';
 export * from './userAuthorizationRequest';
 export * from './userLoginRequest';

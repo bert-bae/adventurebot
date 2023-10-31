@@ -14,8 +14,8 @@ import { useState } from "./helpers";
 const {
   welcomeNotification,
   startStoryNotification,
-  storyStartedNotification,
-  storyIdeaNotification,
+  // storyStartedNotification,
+  // storyIdeaNotification,
   newStoryNotification,
   continueStoryNotification,
   markStoryAsPublished,

@@ -40,7 +40,7 @@ export class StoryPromptService {
   private basePrompt: string;
   constructor() {
     this.basePrompt =
-      "You are a story teller that lets users decide how to continue the story. Your responses should be less than 100 words. Provide 3 choices on how the user should continue the user's story by using the function getStoryWithChoices({story: string, choices: Array<{ type, content }> }).";
+      "You are a story teller that lets users decide how to continue the story. Your responses should be less than 100 words. As a story teller, you wait for the user's input on how to continue the story. Once you receive the user's decision, you respond with a continuation of the story that takes into consideration the user's latest decision.";
     this.oai = new OpenAiService();
     this.storiesModel = new StoriesModel();
   }
@@ -60,8 +60,8 @@ export class StoryPromptService {
   ): Promise<StoryWithChoices & { id: string }> {
     const chatCompletion = await this.oai.getPrompt(
       this.basePrompt,
-      this.createStartPrompt(storyStart),
-      [getStoryWithChoices.schema]
+      this.createStartPrompt(storyStart)
+      // [getStoryWithChoices.schema]
     );
 
     const result = this.constructResponse(chatCompletion);
@@ -88,9 +88,11 @@ export class StoryPromptService {
       request.decision
     );
 
-    const chatCompletion = await this.oai.getPrompt(this.basePrompt, prompt, [
-      getStoryWithChoices.schema,
-    ]);
+    const chatCompletion = await this.oai.getPrompt(
+      this.basePrompt,
+      prompt
+      // [getStoryWithChoices.schema]
+    );
     const response = this.constructResponse(chatCompletion);
     await this.storiesModel.addSections(request.id, {
       choice: request.decision,

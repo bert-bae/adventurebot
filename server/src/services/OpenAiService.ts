@@ -15,8 +15,8 @@ export class OpenAiService {
 
   public async getPrompt(
     systemPrompt: string,
-    prompt: string,
-    functions?: ChatCompletionCreateParams.Function[]
+    prompt: string
+    // functions?: ChatCompletionCreateParams.Function[]
   ): Promise<ChatCompletion> {
     const chatCompletion = await this.client.chat.completions.create({
       messages: [
@@ -24,8 +24,8 @@ export class OpenAiService {
         { role: "user", content: prompt },
       ],
       model: "gpt-3.5-turbo",
-      functions,
-      function_call: "auto",
+      // functions,
+      // function_call: "auto",
     });
     return chatCompletion;
   }

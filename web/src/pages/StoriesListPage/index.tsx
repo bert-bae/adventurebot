@@ -45,11 +45,12 @@ const StoriesListPage = () => {
           data?.data.map((story) => {
             return (
               <Button
-                variant="contained"
+                variant="outlined"
                 sx={{ my: 2, display: "block" }}
+                fullWidth
                 onClick={() => navigate(`/stories/${story.id}`)}
               >
-                <Typography variant="h3">{story.title}</Typography>
+                <Typography variant="h4">{story.title}</Typography>
                 <Typography variant="caption">
                   Created: {new Date(story.createdAt).toDateString()}
                 </Typography>

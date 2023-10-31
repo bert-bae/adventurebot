@@ -23,7 +23,7 @@ const NavigationBar: React.FC<NavigationBarProps> = () => {
     <StyledAppBar position="fixed">
       <Toolbar sx={{ width: "100%", margin: "0 auto" }}>
         <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h2">Bertcode | AdventureBot</Typography>
+          <Typography variant="h2">AdventureBot</Typography>
         </Box>
         {!state.user.id && (
           <Button variant="outlined" onClick={() => navigate("/login")}>
@@ -31,15 +31,26 @@ const NavigationBar: React.FC<NavigationBarProps> = () => {
           </Button>
         )}
         {!!state.user.id && (
-          <Button
-            variant="outlined"
-            onClick={() => {
-              removeToken();
-              navigate("/login");
-            }}
-          >
-            Logout
-          </Button>
+          <>
+            <Button
+              sx={{ mr: 2 }}
+              variant="contained"
+              onClick={() => {
+                navigate("/stories");
+              }}
+            >
+              View Stories
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                removeToken();
+                navigate("/login");
+              }}
+            >
+              Logout
+            </Button>
+          </>
         )}
       </Toolbar>
     </StyledAppBar>

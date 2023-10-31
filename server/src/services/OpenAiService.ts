@@ -1,9 +1,5 @@
 import OpenAI from "openai";
-import {
-  ChatCompletion,
-  ChatCompletionCreateParams,
-  ImagesResponse,
-} from "openai/resources";
+import { ChatCompletion, ImagesResponse } from "openai/resources";
 
 export class OpenAiService {
   private client: OpenAI;

@@ -17,7 +17,7 @@ import {
 import { StoryWithChoices } from "../oaiFunctions/getStoryWithChoices";
 import { ExtendedRequest } from "../utils/types/request.type";
 import { storyProgressionWf } from "../temporal/client";
-import { Story, StorySection } from "@prisma/client";
+import { Story } from "@prisma/client";
 import { TsoaMap } from "../utils/types/util.type";
 import { StorySchema, StorySectionSchema } from "../models/tsoa.schemas";
 

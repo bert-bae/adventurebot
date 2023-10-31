@@ -17,7 +17,7 @@ const {
   // storyStartedNotification,
   // storyIdeaNotification,
   newStoryNotification,
-  continueStoryNotification,
+  // continueStoryNotification,
   markStoryAsPublished,
   storyPublishedNotification,
 } = proxyActivities<typeof activities>({
@@ -43,11 +43,7 @@ export async function storyProgressionWorkflow(params: {
   await newStoryNotification(params.userId);
 
   stopStory.attachHandlers();
-  while (!stopStory.get()) {
-    await sleep("10 seconds");
-    await continueStoryNotification(params.userId, params.storyId);
-  }
-
+  await condition(() => stopStory.get());
   await markStoryAsPublished(params.storyId);
   await storyPublishedNotification(params.userId, params.storyId);
 }

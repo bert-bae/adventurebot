@@ -5,15 +5,23 @@ import {
   Button,
   Skeleton,
   TextField,
+  Snackbar,
+  Chip,
 } from "@mui/material";
 import { useDecision, useEndStory } from "api/__generated__/server";
 import { useCallback, useState } from "react";
 import { StorySectionItem } from "./types";
 import { StoryWithChoices } from "api/__generated__/schemas";
 import { useNavigate } from "react-router-dom";
+import {
+  BookRounded,
+  CheckBoxOutlineBlankSharp,
+  CheckRounded,
+} from "@mui/icons-material";
 
 type IStoryContentProps = {
   sections: StorySectionItem[];
+  published: boolean;
   // choices: {
   //   type: "active" | "passive" | "neutral";
   //   content: string;
@@ -26,6 +34,7 @@ const MAX_DECISION_LENGTH = 160;
 const StoryContent = ({
   storyId,
   sections,
+  published,
   // choices,
   onUpdateStory,
 }: IStoryContentProps) => {
@@ -64,8 +73,26 @@ const StoryContent = ({
   );
 
   return (
-    <Grid container spacing={4}>
+    <Grid container spacing={4} sx={{ py: 4 }}>
       <Grid item lg={12} md={12}>
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          {!published && (
+            <Chip
+              sx={{ ml: "auto", mr: 0 }}
+              icon={<BookRounded />}
+              variant="filled"
+              label="In Progress"
+            />
+          )}
+          {published && (
+            <Chip
+              sx={{ ml: "auto", mr: 0 }}
+              icon={<CheckRounded />}
+              variant="filled"
+              label="Published"
+            />
+          )}
+        </Box>
         <Box sx={{ overflowY: "auto", maxHeight: "400px" }}>
           {sections.map(({ story, choice }, i) => (
             <Typography key={i} variant="h3" sx={{ whiteSpace: "pre-wrap" }}>
@@ -75,52 +102,55 @@ const StoryContent = ({
           <a href="#bottomTarget" />
         </Box>
       </Grid>
-      <Grid item lg={5} md={12} sx={{ ml: "auto", mr: 0 }} width="100%">
-        <Box sx={{ mt: "auto", mb: 0 }}>
-          <TextField
-            focused
-            variant="outlined"
-            multiline
-            minRows={3}
-            maxRows={5}
-            value={decisionInput}
-            fullWidth
-            placeholder="Type your decision..."
-            inputProps={{ maxLength: MAX_DECISION_LENGTH }}
-            helperText={`${decisionInput.length} / ${MAX_DECISION_LENGTH}`}
-            onChange={(e) => setDecisionInput(e.target.value)}
-          />
-          <Button
-            sx={{
-              mt: 2,
-              marginRight: 0,
-              marginLeft: "auto",
-              display: "block",
-              width: "150px",
-            }}
-            variant="contained"
-            onClick={() => makeDecision(decisionInput)}
-          >
-            <Typography variant="h3">Submit</Typography>
-          </Button>
-          <Button
-            sx={{
-              mt: 2,
-              marginRight: 0,
-              marginLeft: "auto",
-              display: "block",
-              width: "150px",
-            }}
-            variant="outlined"
-            onClick={(e) => {
-              e.preventDefault();
-              endStory({ id: storyId });
-            }}
-          >
-            <Typography variant="h3">End Story</Typography>
-          </Button>
-        </Box>
-      </Grid>
+      {!published && (
+        <Grid item lg={5} md={12} sx={{ ml: "auto", mr: 0 }} width="100%">
+          <Box sx={{ mt: "auto", mb: 0 }}>
+            <TextField
+              focused
+              variant="outlined"
+              multiline
+              minRows={3}
+              maxRows={5}
+              value={decisionInput}
+              fullWidth
+              placeholder="Type your decision..."
+              inputProps={{ maxLength: MAX_DECISION_LENGTH }}
+              helperText={`${decisionInput.length} / ${MAX_DECISION_LENGTH}`}
+              onChange={(e) => setDecisionInput(e.target.value)}
+            />
+            <Button
+              sx={{
+                mt: 2,
+                marginRight: 0,
+                marginLeft: "auto",
+                display: "block",
+                width: "150px",
+              }}
+              variant="contained"
+              onClick={() => makeDecision(decisionInput)}
+            >
+              <Typography variant="h3">Submit</Typography>
+            </Button>
+
+            <Button
+              sx={{
+                mt: 2,
+                marginRight: 0,
+                marginLeft: "auto",
+                display: "block",
+                width: "150px",
+              }}
+              variant="outlined"
+              onClick={(e) => {
+                e.preventDefault();
+                endStory({ id: storyId });
+              }}
+            >
+              <Typography variant="h3">End Story</Typography>
+            </Button>
+          </Box>
+        </Grid>
+      )}
     </Grid>
   );
 };

@@ -15,7 +15,7 @@ const StoryPage = () => {
   const isLarge = useMediaQuery(theme.breakpoints.up(1200));
   const { storyId } = useParams<{ storyId: string }>();
   const [sections, setSections] = useState<StorySectionItem[]>([]);
-  const { isLoading } = useGetStory(storyId!, {
+  const { data, isLoading } = useGetStory(storyId!, {
     query: {
       onSuccess: ({ data: story }) => {
         setSections(
@@ -85,6 +85,7 @@ const StoryPage = () => {
             <CircularProgress />
           ) : (
             <StoryContent
+              published={!!data?.data.published}
               storyId={storyId!}
               sections={sections}
               // choices={choices}

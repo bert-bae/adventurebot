@@ -1,23 +1,10 @@
-import {
-  Grid,
-  Box,
-  Typography,
-  Button,
-  Skeleton,
-  TextField,
-  Snackbar,
-  Chip,
-} from "@mui/material";
+import { Grid, Box, Typography, TextField, Chip } from "@mui/material";
 import { useDecision, useEndStory } from "api/__generated__/server";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { StorySectionItem } from "./types";
-import { StoryWithChoices } from "api/__generated__/schemas";
 import { useNavigate } from "react-router-dom";
-import {
-  BookRounded,
-  CheckBoxOutlineBlankSharp,
-  CheckRounded,
-} from "@mui/icons-material";
+import { BookRounded, CheckRounded } from "@mui/icons-material";
+import MuiButton from "components/MuiButton";
 
 type IStoryContentProps = {
   sections: StorySectionItem[];
@@ -40,6 +27,7 @@ const StoryContent = ({
 }: IStoryContentProps) => {
   const navigate = useNavigate();
   const [decisionInput, setDecisionInput] = useState<string>("");
+  const scrollableRef = useRef<HTMLDivElement>();
   const { mutate: decide, isLoading: isDecisionLoading } = useDecision({
     mutation: {
       onSuccess: ({ data }) => {
@@ -47,7 +35,7 @@ const StoryContent = ({
       },
     },
   });
-  const { mutate: endStory } = useEndStory({
+  const { mutate: endStory, isLoading: isFinishing } = useEndStory({
     mutation: {
       onSuccess: () => {
         navigate("/stories");
@@ -72,10 +60,19 @@ const StoryContent = ({
     [storyId]
   );
 
+  useEffect(() => {
+    const scrollable = scrollableRef.current;
+    if (!scrollable) {
+      return;
+    }
+
+    scrollable.scrollTop = scrollable.scrollHeight - scrollable.clientHeight;
+  }, [sections]);
+
   return (
     <Grid container spacing={4} sx={{ py: 4 }}>
       <Grid item lg={12} md={12}>
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
           {!published && (
             <Chip
               sx={{ ml: "auto", mr: 0 }}
@@ -93,13 +90,12 @@ const StoryContent = ({
             />
           )}
         </Box>
-        <Box sx={{ overflowY: "auto", maxHeight: "400px" }}>
+        <Box ref={scrollableRef} sx={{ overflowY: "auto", maxHeight: "400px" }}>
           {sections.map(({ story, choice }, i) => (
             <Typography key={i} variant="h3" sx={{ whiteSpace: "pre-wrap" }}>
               {choice ? `\nChoice: ${choice}` : `\n${story}`}
             </Typography>
           ))}
-          <a href="#bottomTarget" />
         </Box>
       </Grid>
       {!published && (
@@ -118,7 +114,7 @@ const StoryContent = ({
               helperText={`${decisionInput.length} / ${MAX_DECISION_LENGTH}`}
               onChange={(e) => setDecisionInput(e.target.value)}
             />
-            <Button
+            <MuiButton
               sx={{
                 mt: 2,
                 marginRight: 0,
@@ -127,12 +123,14 @@ const StoryContent = ({
                 width: "150px",
               }}
               variant="contained"
+              disabled={isFinishing}
+              loading={isDecisionLoading}
               onClick={() => makeDecision(decisionInput)}
             >
               <Typography variant="h3">Submit</Typography>
-            </Button>
+            </MuiButton>
 
-            <Button
+            <MuiButton
               sx={{
                 mt: 2,
                 marginRight: 0,
@@ -141,13 +139,15 @@ const StoryContent = ({
                 width: "150px",
               }}
               variant="outlined"
+              disabled={isDecisionLoading}
+              loading={isFinishing}
               onClick={(e) => {
                 e.preventDefault();
                 endStory({ id: storyId });
               }}
             >
               <Typography variant="h3">End Story</Typography>
-            </Button>
+            </MuiButton>
           </Box>
         </Grid>
       )}

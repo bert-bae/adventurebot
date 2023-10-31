@@ -1,12 +1,11 @@
 import Page from "layout/Page";
 import { useCallback, useState } from "react";
-import { Button, Box, useMediaQuery, CircularProgress } from "@mui/material";
+import { Box, useMediaQuery, CircularProgress } from "@mui/material";
 import FadeIn from "components/animated/FadeIn";
-import { useGetStory, useStartStory } from "api/__generated__/server";
+import { useGetStory } from "api/__generated__/server";
 import { LAYOUT_SIZES } from "theme";
 import StoryContent from "./StoryContent";
 import { StorySectionItem } from "./types";
-import { StoryWithChoices } from "api/__generated__/schemas";
 import { useTheme } from "@emotion/react";
 import { useParams } from "react-router-dom";
 
@@ -35,23 +34,6 @@ const StoryPage = () => {
       },
     },
   });
-  // const { mutate: start, isLoading } = useStartStory({
-  //   mutation: {
-  //     onSuccess: ({ data }) => {
-  //       setSections((prev) => [...prev, { story: data.story }]);
-  //       setChoices(data.choices);
-  //     },
-  //   },
-  // });
-
-  // const startStory = useCallback(() => {
-  //   start({
-  //     data: {
-  //       title: "Test Title",
-  //       story: "Story about a building that never stops growing.",
-  //     },
-  //   });
-  // }, []);
 
   const addStorySection = (type: "story" | "choice", content: string) => {
     // @ts-ignore
@@ -62,19 +44,6 @@ const StoryPage = () => {
 
   return (
     <Page>
-      {/* {!sections.length && (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height={`calc(100vh - ${LAYOUT_SIZES.navigationBar.height})`}
-        >
-          <Button variant="contained" onClick={startStory} disabled={isLoading}>
-            Click to Start Your Story
-          </Button>
-        </Box>
-      )} */}
-
       <Box
         {...largeStyle}
         sx={{ px: 8 }}

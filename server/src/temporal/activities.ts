@@ -1,3 +1,4 @@
+import { prisma } from "../db/pg";
 import { getWsConnection } from "../websocket";
 
 export async function welcomeNotification(userId: string): Promise<boolean> {
@@ -55,6 +56,78 @@ export async function storyStartedNotification(
     JSON.stringify({
       type: "success",
       message: "Great job starting your first story with AdventureBot!",
+    })
+  );
+  return true;
+}
+
+export async function newStoryNotification(userId: string): Promise<boolean> {
+  const socket = getWsConnection(userId);
+  if (!socket) {
+    return false;
+  }
+
+  socket.send(
+    JSON.stringify({
+      type: "success",
+      message: "Let's start this journey!",
+    })
+  );
+  return true;
+}
+
+export async function continueStoryNotification(
+  userId: string,
+  storyId: string
+): Promise<boolean> {
+  const socket = getWsConnection(userId);
+  if (!socket) {
+    return false;
+  }
+
+  socket.send(
+    JSON.stringify({
+      type: "success",
+      message:
+        "Hmm... You haven't made a choice yet. The story can't continue without your input!",
+      meta: {
+        storyId,
+      },
+    })
+  );
+  return true;
+}
+
+export async function markStoryAsPublished(storyId: string): Promise<boolean> {
+  await prisma.story.update({
+    data: { published: true },
+    where: { id: storyId },
+  });
+  return true;
+}
+
+export async function storyPublishedNotification(
+  userId: string,
+  storyId: string
+): Promise<boolean> {
+  const socket = getWsConnection(userId);
+  if (!socket) {
+    return false;
+  }
+
+  const story = await prisma.story.findUnique({ where: { id: storyId } });
+  console.log(story);
+  if (!story) {
+    return false;
+  }
+
+  socket.send(
+    JSON.stringify({
+      type: "info",
+      message: `Story called ${story.title} has been published!`,
+      meta: {
+        storyId,
+      },
     })
   );
   return true;

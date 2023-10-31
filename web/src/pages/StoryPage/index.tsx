@@ -56,13 +56,16 @@ const StoryPage = () => {
   return (
     <Page>
       {!sections.length && (
-        <FadeIn>
-          <Box>
-            <Button onClick={startStory} disabled={isLoading}>
-              Click to Start Your Story
-            </Button>
-          </Box>
-        </FadeIn>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height={`calc(100vh - ${LAYOUT_SIZES.navigationBar.height})`}
+        >
+          <Button variant="contained" onClick={startStory} disabled={isLoading}>
+            Click to Start Your Story
+          </Button>
+        </Box>
       )}
       {!!sections.length && (
         <Box
@@ -72,6 +75,7 @@ const StoryPage = () => {
         >
           <FadeIn>
             <StoryContent
+              key={storyId}
               storyId={storyId}
               sections={sections}
               choices={choices}

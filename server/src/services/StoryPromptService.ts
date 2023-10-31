@@ -4,6 +4,8 @@ import getStoryWithChoices, {
   StoryWithChoices,
 } from "../oaiFunctions/getStoryWithChoices";
 import { StoriesModel } from "../models/StoriesModel";
+import { sendSignal, workflowIds } from "../temporal/client";
+import { stopStory } from "../temporal/workflows";
 
 export enum StoryEvents {
   Start = "Start",
@@ -80,11 +82,18 @@ export class StoryPromptService {
       getStoryWithChoices.schema,
     ]);
     const response = this.constructResponse(chatCompletion);
-    await this.storiesModel.update(request.id, {
+    await this.storiesModel.addSections(request.id, {
       choice: request.decision,
       story: response.story,
     });
     return response;
+  }
+
+  public async finish(storyId: string) {
+    await this.storiesModel.update(storyId, {
+      published: true,
+    });
+    await sendSignal(workflowIds.story(storyId), stopStory.signal, true);
   }
 
   private constructResponse(completion: ChatCompletion): StoryWithChoices {

@@ -15,8 +15,7 @@ import {
 } from "../services/StoryPromptService";
 import { StoryWithChoices } from "../oaiFunctions/getStoryWithChoices";
 import { ExtendedRequest } from "../utils/types/request.type";
-import { sendSignal, workflowIds } from "../temporal/client";
-import { storyStart } from "../temporal/workflows";
+import { storyProgressionWf } from "../temporal/client";
 
 @Route("story")
 @Tags("Story")
@@ -40,7 +39,7 @@ export class StoryController extends Controller {
   ): Promise<StoryWithChoices & { id: string }> {
     const user = req.user;
     const response = await this.storyService.startStory(user.id, body);
-    await sendSignal(workflowIds.welcome(req.user.id), storyStart.signal, true);
+    await storyProgressionWf(user.id, response.id);
     return response;
   }
 
@@ -55,5 +54,20 @@ export class StoryController extends Controller {
   ): Promise<StoryWithChoices> {
     const response = await this.storyService.decision(body);
     return response;
+  }
+
+  /**
+   * Finishes generating the story and choices and creates the workflow process to mark the story as published.
+   * @returns StoryContent
+   */
+  @SuccessResponse(201, "Created")
+  @Security("jwt")
+  @Post("/{id}")
+  public async endStory(
+    @Request() req: ExtendedRequest,
+    id: string
+  ): Promise<void> {
+    const user = req.user;
+    await this.storyService.finish(id);
   }
 }

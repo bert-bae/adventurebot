@@ -1,6 +1,6 @@
 import { Connection, Client } from "@temporalio/client";
 import { SignalDefinition } from "@temporalio/client";
-import { welcomeWorkflow } from "./workflows";
+import { storyProgressionWorkflow, welcomeWorkflow } from "./workflows";
 import { info } from "loglevel";
 import { nanoid } from "nanoid";
 
@@ -15,6 +15,7 @@ const createClient = async () => {
 
 export const workflowIds = {
   welcome: (userId: string) => "welcome-" + userId,
+  story: (storyId: string) => "storyProgression-" + storyId,
 };
 
 export async function startWelcomeWf(userId: string) {
@@ -24,6 +25,17 @@ export async function startWelcomeWf(userId: string) {
     args: [{ userId }],
     // in practice, use a meaningful business ID, like customerId or transactionId
     workflowId: workflowIds.welcome(userId),
+  });
+  info(`Started workflow ${handle.workflowId}`);
+}
+
+export async function storyProgressionWf(userId: string, storyId: string) {
+  const client = await createClient();
+  const handle = await client.workflow.start(storyProgressionWorkflow, {
+    taskQueue: "adventurebot",
+    args: [{ userId, storyId }],
+    // in practice, use a meaningful business ID, like customerId or transactionId
+    workflowId: workflowIds.story(storyId),
   });
   info(`Started workflow ${handle.workflowId}`);
 }

@@ -241,6 +241,54 @@ export const getDecisionMutationOptions = <TError = AxiosError<unknown>,
       return useMutation(mutationOptions);
     }
     
+/**
+ * Finishes generating the story and choices and creates the workflow process to mark the story as published.
+ */
+export const endStory = (
+    id: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    return axios.post(
+      `/story/${id}`,undefined,options
+    );
+  }
+
+
+
+export const getEndStoryMutationOptions = <TError = AxiosError<unknown>,
+    
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof endStory>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof endStory>>, TError,{id: string}, TContext> => {
+ const {mutation: mutationOptions, axios: axiosOptions} = options ?? {};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof endStory>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  endStory(id,axiosOptions)
+        }
+
+        
+
+ 
+   return  { mutationFn, ...mutationOptions }}
+
+    export type EndStoryMutationResult = NonNullable<Awaited<ReturnType<typeof endStory>>>
+    
+    export type EndStoryMutationError = AxiosError<unknown>
+
+    export const useEndStory = <TError = AxiosError<unknown>,
+    
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof endStory>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+) => {
+    
+      const mutationOptions = getEndStoryMutationOptions(options);
+     
+      return useMutation(mutationOptions);
+    }
+    
 export const createUser = (
     pickUserExcludeKeyofUserId: PickUserExcludeKeyofUserId, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<CreateUser201>> => {

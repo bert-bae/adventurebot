@@ -1,7 +1,9 @@
 import { nanoid } from "nanoid";
 import { StoryStartRequest } from "../services/StoryPromptService";
 import { prisma } from "../db/pg";
+import { Story } from "@prisma/client";
 
+export type UpdateStoryRequest = Partial<Omit<Story, "id" | "authorId">>;
 export class StoriesModel {
   private prisma: typeof prisma;
   constructor() {
@@ -48,7 +50,7 @@ export class StoriesModel {
     return { id: storyId };
   }
 
-  public async update(
+  public async addSections(
     storyId: string,
     value: { choice: string; story: string }
   ) {
@@ -70,5 +72,12 @@ export class StoriesModel {
         },
       }),
     ]);
+  }
+
+  public async update(storyId: string, values: UpdateStoryRequest) {
+    await this.prisma.story.update({
+      data: values,
+      where: { id: storyId },
+    });
   }
 }

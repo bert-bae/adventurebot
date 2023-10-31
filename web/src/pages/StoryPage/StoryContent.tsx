@@ -6,10 +6,11 @@ import {
   Skeleton,
   TextField,
 } from "@mui/material";
-import { useDecision } from "api/__generated__/server";
+import { useDecision, useEndStory } from "api/__generated__/server";
 import { useCallback, useState } from "react";
 import { StorySectionItem } from "./types";
 import { StoryWithChoices } from "api/__generated__/schemas";
+import { useNavigate } from "react-router-dom";
 
 type IStoryContentProps = {
   sections: StorySectionItem[];
@@ -30,12 +31,20 @@ const StoryContent = ({
   onUpdateStory,
   onUpdateChoices,
 }: IStoryContentProps) => {
+  const navigate = useNavigate();
   const [decisionInput, setDecisionInput] = useState<string>("");
   const { mutate: decide, isLoading: isDecisionLoading } = useDecision({
     mutation: {
       onSuccess: ({ data }) => {
         onUpdateStory("story", data.story);
         onUpdateChoices(data.choices);
+      },
+    },
+  });
+  const { mutate: endStory } = useEndStory({
+    mutation: {
+      onSuccess: () => {
+        navigate("/stories");
       },
     },
   });
@@ -115,11 +124,28 @@ const StoryContent = ({
               marginRight: 0,
               marginLeft: "auto",
               display: "block",
+              width: "150px",
             }}
             variant="contained"
             onClick={() => makeDecision(decisionInput)}
           >
             <Typography variant="h3">Submit</Typography>
+          </Button>
+          <Button
+            sx={{
+              mt: 2,
+              marginRight: 0,
+              marginLeft: "auto",
+              display: "block",
+              width: "150px",
+            }}
+            variant="outlined"
+            onClick={(e) => {
+              e.preventDefault();
+              endStory({ id: storyId });
+            }}
+          >
+            <Typography variant="h3">End Story</Typography>
           </Button>
         </Box>
       </Grid>

@@ -3,7 +3,7 @@ import { OpenAiService } from "./OpenAiService";
 import getStoryWithChoices, {
   StoryWithChoices,
 } from "../oaiFunctions/getStoryWithChoices";
-import { StoriesModel } from "../models/StoriesModel";
+import { StoriesModel, UpdateStoryRequest } from "../models/StoriesModel";
 import { sendSignal, workflowIds } from "../temporal/client";
 import { stopStory } from "../temporal/workflows";
 import { Prisma } from "@prisma/client";
@@ -101,11 +101,32 @@ export class StoryPromptService {
     return response;
   }
 
+  public async update(storyId: string, values: UpdateStoryRequest) {
+    await this.storiesModel.update(storyId, values);
+    await sendSignal(workflowIds.story(storyId), stopStory.signal, true);
+  }
+
   public async finish(storyId: string) {
     await this.storiesModel.update(storyId, {
       published: true,
     });
     await sendSignal(workflowIds.story(storyId), stopStory.signal, true);
+  }
+
+  public async streamlineStory(storyId: string) {
+    const sections = await this.storiesModel.getSections(storyId);
+    const merged = sections.reduce((prev, next) => {
+      if (next.type === "STORY") {
+        prev += next.content + "\n\n";
+      }
+      return prev;
+    }, "");
+    const promptRes = await this.oai.getPrompt(
+      "Turn the following text into a properly formatted story that uses each section as inspiration to create a singular plotline. ",
+      merged
+    );
+    console.log(promptRes.choices[0].message.content);
+    return promptRes.choices[0].message.content;
   }
 
   private constructResponse(completion: ChatCompletion): StoryWithChoices {

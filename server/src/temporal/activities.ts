@@ -1,5 +1,8 @@
 import { prisma } from "../db/pg";
+import { StoryPromptService } from "../services/StoryPromptService";
 import { getWsConnection } from "../websocket";
+
+const storyPromptService = new StoryPromptService();
 
 export async function welcomeNotification(userId: string): Promise<boolean> {
   const socket = getWsConnection(userId);
@@ -131,4 +134,9 @@ export async function storyPublishedNotification(
     })
   );
   return true;
+}
+
+export async function streamlineStoryContent(storyId: string) {
+  const converted = await storyPromptService.streamlineStory(storyId);
+  await storyPromptService.update(storyId, { content: converted });
 }

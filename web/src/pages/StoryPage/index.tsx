@@ -57,6 +57,7 @@ const StoryPage = () => {
               published={!!data?.data.published}
               storyId={storyId!}
               sections={sections}
+              finalStory={data?.data.content || ""}
               // choices={choices}
               onUpdateStory={addStorySection}
             />

@@ -1,14 +1,16 @@
-import { Grid, Box, Typography, TextField, Chip } from "@mui/material";
+import { Grid, Box, Typography, TextField, Chip, Divider } from "@mui/material";
 import { useDecision, useEndStory } from "api/__generated__/server";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StorySectionItem } from "./types";
 import { useNavigate } from "react-router-dom";
 import { BookRounded, CheckRounded } from "@mui/icons-material";
 import MuiButton from "components/MuiButton";
+import { useTheme } from "@emotion/react";
 
 type IStoryContentProps = {
   sections: StorySectionItem[];
   published: boolean;
+  finalStory?: string;
   // choices: {
   //   type: "active" | "passive" | "neutral";
   //   content: string;
@@ -20,11 +22,13 @@ type IStoryContentProps = {
 const MAX_DECISION_LENGTH = 160;
 const StoryContent = ({
   storyId,
+  finalStory,
   sections,
   published,
   // choices,
   onUpdateStory,
 }: IStoryContentProps) => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const [decisionInput, setDecisionInput] = useState<string>("");
   const scrollableRef = useRef<HTMLDivElement>();
@@ -62,12 +66,12 @@ const StoryContent = ({
 
   useEffect(() => {
     const scrollable = scrollableRef.current;
-    if (!scrollable) {
+    if (!scrollable || published) {
       return;
     }
 
     scrollable.scrollTop = scrollable.scrollHeight - scrollable.clientHeight;
-  }, [sections]);
+  }, [sections, published]);
 
   return (
     <Grid container spacing={4} sx={{ py: 4 }}>
@@ -90,7 +94,40 @@ const StoryContent = ({
             />
           )}
         </Box>
-        <Box ref={scrollableRef} sx={{ overflowY: "auto", maxHeight: "400px" }}>
+        <Box
+          ref={scrollableRef}
+          sx={{ overflowY: "auto", maxHeight: "400px", position: "relative" }}
+        >
+          {finalStory && (
+            <>
+              <Typography
+                variant="h2"
+                sx={{
+                  py: 2,
+                  position: "sticky",
+                  top: 0,
+                  backgroundColor: "black",
+                }}
+              >
+                Your Story
+              </Typography>
+              <Typography variant="h3" sx={{ whiteSpace: "pre-wrap" }}>
+                {finalStory}
+              </Typography>
+              <Divider sx={{ borderColor: "white", my: 2 }} />
+            </>
+          )}
+          <Typography
+            variant="h2"
+            sx={{
+              py: 2,
+              position: "sticky",
+              top: 0,
+              backgroundColor: "black",
+            }}
+          >
+            Story Progression
+          </Typography>
           {sections.map(({ story, choice }, i) => (
             <Typography key={i} variant="h3" sx={{ whiteSpace: "pre-wrap" }}>
               {choice ? `\nChoice: ${choice}` : `\n${story}`}

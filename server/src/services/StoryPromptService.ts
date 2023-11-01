@@ -125,7 +125,6 @@ export class StoryPromptService {
       "Turn the following text into a properly formatted story that uses each section as inspiration to create a singular plotline. ",
       merged
     );
-    console.log(promptRes.choices[0].message.content);
     return promptRes.choices[0].message.content;
   }
 

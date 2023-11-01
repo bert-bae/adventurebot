@@ -6,9 +6,8 @@ import { useState } from "./helpers";
 const {
   welcomeNotification,
   newStoryNotification,
-  markStoryAsPublished,
   storyPublishedNotification,
-  streamlineStoryContent,
+  publishStory,
 } = proxyActivities<typeof activities>({
   startToCloseTimeout: "1 minute",
 });
@@ -29,7 +28,6 @@ export async function storyProgressionWorkflow(params: {
 
   stopStory.attachHandlers();
   await condition(() => stopStory.get());
-  await streamlineStoryContent(params.storyId);
-  await markStoryAsPublished(params.storyId);
+  await publishStory(params.storyId);
   await storyPublishedNotification(params.userId, params.storyId);
 }

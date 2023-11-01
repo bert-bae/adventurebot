@@ -31,25 +31,16 @@ export async function newStoryNotification(userId: string): Promise<boolean> {
   return true;
 }
 
-export async function markStoryAsPublished(storyId: string): Promise<boolean> {
-  await prisma.story.update({
-    data: { published: true },
-    where: { id: storyId },
-  });
-  return true;
-}
-
 export async function storyPublishedNotification(
   userId: string,
   storyId: string
 ): Promise<boolean> {
   const socket = getWsConnection(userId);
   if (!socket) {
-    return false;
+    throw new Error("User websocket is not connected.");
   }
 
   const story = await prisma.story.findUnique({ where: { id: storyId } });
-  console.log(story);
   if (!story) {
     return false;
   }
@@ -66,7 +57,10 @@ export async function storyPublishedNotification(
   return true;
 }
 
-export async function streamlineStoryContent(storyId: string) {
+export async function publishStory(storyId: string) {
   const converted = await storyPromptService.streamlineStory(storyId);
-  await storyPromptService.update(storyId, { content: converted });
+  await storyPromptService.update(storyId, {
+    content: converted,
+    published: true,
+  });
 }

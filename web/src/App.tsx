@@ -1,4 +1,8 @@
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import {
+  QueryClientProvider,
+  QueryClient,
+  QueryCache,
+} from "@tanstack/react-query";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import "./App.css";
 import { theme } from "theme";
@@ -7,12 +11,39 @@ import { BrowserRouter } from "react-router-dom";
 import { CookiesProvider } from "react-cookie";
 import { AuthorizationProvider } from "contexts/AuthorizationProvider";
 import { NotificationProvider } from "contexts/NotificationProvider";
-const client = new QueryClient();
+import useAuthCookie from "utils/hooks/useAuthCookie";
+
+const QueryClientProviderWrapper: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const { removeToken } = useAuthCookie();
+  const queryClient = new QueryClient({
+    queryCache: new QueryCache({
+      onError: (err: any) => {
+        if (err?.response?.data?.code === "AuthorizationExpired") {
+          removeToken();
+        }
+      },
+    }),
+    defaultOptions: {
+      queries: {
+        staleTime: 5000,
+        retry: false,
+      },
+      mutations: {
+        retry: false,
+      },
+    },
+  });
+  return (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
 
 function App() {
   return (
     <CookiesProvider>
-      <QueryClientProvider client={client}>
+      <QueryClientProviderWrapper>
         <AuthorizationProvider>
           <NotificationProvider>
             <ThemeProvider theme={theme}>
@@ -23,7 +54,7 @@ function App() {
             </ThemeProvider>
           </NotificationProvider>
         </AuthorizationProvider>
-      </QueryClientProvider>
+      </QueryClientProviderWrapper>
     </CookiesProvider>
   );
 }

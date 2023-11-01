@@ -5,11 +5,7 @@ import { useState } from "./helpers";
 
 const {
   welcomeNotification,
-  startStoryNotification,
-  // storyStartedNotification,
-  // storyIdeaNotification,
   newStoryNotification,
-  // continueStoryNotification,
   markStoryAsPublished,
   storyPublishedNotification,
   streamlineStoryContent,
@@ -21,9 +17,8 @@ export const storyStart = useState<boolean>("storyStart", false);
 export const stopStory = useState<boolean>("stopStory", false);
 
 export async function welcomeWorkflow(params: { userId: string }) {
-  await welcomeNotification(params.userId);
   await sleep("5 seconds");
-  await startStoryNotification(params.userId);
+  await welcomeNotification(params.userId);
 }
 
 export async function storyProgressionWorkflow(params: {

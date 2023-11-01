@@ -23,7 +23,13 @@ const Page: PageProps = ({ children }) => {
       <Box height="100%">
         <PageWrapper>{children}</PageWrapper>
       </Box>
-      <Box sx={{ position: "fixed", bottom: 0, width: "100%" }}>
+      <Box
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          width: "100%",
+        }}
+      >
         <Copyright />
       </Box>
     </StyledPage>

@@ -10,7 +10,7 @@ import { useAuthContext } from "contexts/AuthorizationProvider";
 type NavigationBarProps = {};
 
 const StyledAppBar = styled(AppBar)`
-  background-color: transparent;
+  background-color: black;
   z-index: 1000;
   box-shadow: ${({ theme }) => theme.shadows[0]};
 `;

@@ -1,7 +1,7 @@
 FROM node:18.18.0
 
 LABEL version="1.0"
-LABEL description="Frontend app for haiku weather"
+LABEL description="Frontend app for adventurebot"
 LABEL maintainer = ["bae.webdev@gmail.com"]
 
 WORKDIR /app

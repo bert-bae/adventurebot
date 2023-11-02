@@ -45,6 +45,7 @@ const StoriesListPage = () => {
           data?.data.map((story) => {
             return (
               <Button
+                key={story.id}
                 variant="outlined"
                 sx={{ my: 2, display: "block" }}
                 fullWidth

@@ -87,12 +87,14 @@ export class StoryPromptService {
       storyProgression,
       request.decision
     );
-
+    console.log("chatCompletion");
     const chatCompletion = await this.oai.getPrompt(
       this.basePrompt,
       prompt
       // [getStoryWithChoices.schema]
     );
+    console.log("chatCompletion", chatCompletion);
+
     const response = this.constructResponse(chatCompletion);
     await this.storiesModel.addSections(request.id, {
       choice: request.decision,

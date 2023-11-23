@@ -35,6 +35,7 @@ app.use("/swagger", swaggerUi.serve, async (_req: Request, res: Response) => {
 RegisterRoutes(app);
 
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+  console.error("Err: ", err);
   if (err instanceof ValidateError) {
     console.warn(`Caught Validation Error for ${req.path}:`, err.fields);
     return res.status(422).json({

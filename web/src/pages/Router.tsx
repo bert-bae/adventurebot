@@ -18,6 +18,12 @@ const Router = () => {
     state: { user },
   } = useAuthContext();
   const location = useLocation();
+  if (location.pathname === "/") {
+    return (
+      <Navigate to="/stories" replace state={{ path: location.pathname }} />
+    );
+  }
+
   if (
     !!user.id &&
     (location.pathname === "/login" || location.pathname === "/register")

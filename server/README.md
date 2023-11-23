@@ -1,10 +1,18 @@
 # Setup
 
+## Environment Variables
+
+1. Copy `.env.template` to `.env`
+2. Go to (OpenAI)[https://platform.openai.com/] and create an account then a secret key. Add this value to the environment variable `OPENAI_SECRET`
+3. Go to (OpenWeather)[https://openweathermap.org/] and create an account then an API key. Add this value to the environment variable `OPENWEATHER_SECRET`
+
+## Program Setup
+
 The server requires the following to be setup:
 
 1. NodeJs v18.16.0
 2. Docker to run Postgresql via the `docker-compose.yml` at the root
-3. Temporal CLI
+3. (Temporal CLI)[https://docs.temporal.io/cli]
 
 To run the application:
 

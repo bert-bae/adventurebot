@@ -7,13 +7,13 @@ This project is a demo to explore Temporal and OpenAI capabilities to create dur
 ## Demo
 
 Start:
-(Start)[./demo/start.png]
+![Start](./demo/start.png)
 
 List:
-(List)[./demo/list.png]
+![List](./demo/list.png)
 
 Publish:
-(Publish)[./demo/publish.png]
+![Publish](./demo/publish.png)
 
 # Web
 
